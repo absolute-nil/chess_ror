@@ -2,7 +2,7 @@
 
 class BoardController < ApplicationController
   before_action :init,  only: :index
-  before_action :get_board, except: :index
+  before_action :board, except: :index
   def index
     @board
   end
@@ -14,7 +14,7 @@ class BoardController < ApplicationController
       return nil
     end
     id = @board.my_piece
-    piece = Piece.get_instance_by_id(id)[0]
+    piece = Piece.get_instance_by_id(id, session)
 
     @position = piece.current_position
     session['position'] = @position
@@ -30,11 +30,15 @@ class BoardController < ApplicationController
       return nil
     end
 
-    @piece = Piece.get_instance_by_id(@board.my_piece)[0]
+    @piece = Piece.get_instance_by_id(@board.my_piece, session)
 
-    success = @piece&.move(params[:units].to_i, 'FORWARD')
-    flash[:notice] = 'Your move has been made' if success
-    flash[:alert] = 'Not a valid move, Try again!' unless success
+    success_piece = @piece&.move(params[:units].to_i, 'FORWARD')
+    if !success_piece
+      flash[:alert] = 'Not a valid move, Try again!'
+    else
+      update_piece(success_piece)
+      flash[:notice] = 'Your move has been made'
+    end
     redirect_back fallback_location: root_path
 
   end
@@ -54,7 +58,7 @@ class BoardController < ApplicationController
       return nil
     end
 
-    @piece = Piece.get_instance_by_id(@board.my_piece)[0]
+    @piece = Piece.get_instance_by_id(@board.my_piece, session)
     @piece.change_direction(params[:direction])
     flash[:notice] = 'Direction changed successfully'
 
@@ -76,6 +80,7 @@ class BoardController < ApplicationController
       session['board'] = @board
       flash[:notice] = 'Your piece has been placed'
 
+      store_piece(piece)
     else
       flash[:alert] = 'not a valid input'
     end
@@ -85,11 +90,19 @@ class BoardController < ApplicationController
   def end
     session.delete(:board)
     session.delete(:position)
+    session.delete(:pieces_array)
     flash[:notice] = 'Game has been reset'
     redirect_to root_path
   end
 
+
+
   private
+
+  def update_piece(piece)
+    session[:pieces_array].delete_if { |h| h["id"] == 0 }
+    session['pieces_array'] << piece
+  end
 
   def init
     if session['board'].nil?
@@ -98,9 +111,15 @@ class BoardController < ApplicationController
     else
       @board = Board.new(session['board'])
     end
+
+    session[:pieces_array] ||= [] if session[:pieces_array].nil? || session[:pieces_array].empty?
   end
 
-  def get_board
+  def store_piece(piece)
+    session['pieces_array'] << piece
+  end
+
+  def board
     @board = Board.new(session['board'])
   end
 

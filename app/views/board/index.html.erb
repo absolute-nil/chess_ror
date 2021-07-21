@@ -16,7 +16,7 @@
 <%= form_with url: "/board/place", method: :post do |form| %>
   <%= form.label :x, "X coordinate:" %>
   <%= form.text_field :x %>
-  <%= form.label :x, "y coordinate:" %>
+  <%= form.label :y, "y coordinate:" %>
   <%= form.text_field :y %>
   <%= form.label :face, "face:" %>
   <%= form.text_field :face %>
@@ -29,7 +29,7 @@
 
 <%= form_with url: "/board/move", method: :patch do |form| %>
   <%= form.label :units, "units:" %>
-  <%= form.text_field :color %>
+  <%= form.text_field :units %>
   <%= form.submit "Move" %>
 <% end %>
 

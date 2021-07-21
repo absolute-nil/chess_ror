@@ -2,21 +2,23 @@ class Piece
   include ActiveModel::Model
   attr_accessor :color, :x_cord, :y_cord, :face, :id, :board
 
-  @@instance_collector = []
+  # Not thead safe
+  # @@instance_collector = []
 
+  # def initialize(attributes)
+  #   super
+  #   # @@instance_collector << self
+  #   @board.store_piece(self)
+  # end
 
-  def initialize(attributes)
-    super
-    @@instance_collector << self
+  def self.get_instance_by_id(id, session)
+    piece = session['pieces_array'].select { |piece| Pawn.new(piece).id == id }
+    Pawn.new(piece[0])
   end
 
-  def self.get_instance_by_id(id)
-    @@instance_collector.select { |piece| piece.id == id }
-  end
-
-  def self.clear
-    @@instance_collector = []
-  end
+  # def self.clear
+  #   session['pieces_array'] = []
+  # end
 
   # def is_overlapping?(x_cord, y_cord)
   #  Can implement it later
@@ -69,7 +71,7 @@ class Piece
     self.face = face
     self.x_cord = x_cord
     self.y_cord = y_cord
-    [self.x_cord, self.y_cord, self.face]
+    self
   end
 
 

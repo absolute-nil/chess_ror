@@ -5,18 +5,18 @@ class Pawn < Piece
 
   def initialize(attributes)
     super
-    @first_move = true
-    @board = board
+    @first_move = first_move || true
+    @board = board.is_a?(Board) ? board : Board.new(board)
   end
 
   def valid_fist_move?(units)
     if units < -2 || units > 2
-      flash[:alert] = "You can't move the piece #{@id} by #{units} positions"
+      # raise "You can't move the piece #{@id} by #{units} positions"
       return false
     end
 
     if (units > 1 || units < -1) && !@first_move
-      flash[:alert] = "You can't move the piece #{@id} by #{units} positions"
+      # raise "You can't move the piece #{@id} by #{units} positions"
       return false
     end
 
@@ -31,7 +31,7 @@ class Pawn < Piece
 
     return true if move_within_bounds
 
-    raise 'Not a valid move'
+    false
   end
 
   def validate(units)
@@ -47,7 +47,7 @@ class Pawn < Piece
   def move(units, direction)
     if direction != 'FORWARD'
       puts "you can not move the Pawn in #{direction} direction "
-      return nil
+      return false
     end
 
     move_front(units)
@@ -70,13 +70,11 @@ class Pawn < Piece
 
     new_x, new_y = validate(units)
     unless new_x.nil?
-      set_position(new_x, new_y, @face)
       @first_move = false
-      flash[:notice] = 'Your move has been made'
-      true
+      return set_position(new_x, new_y, @face)
     end
+    false
   rescue RuntimeError
-    flash[:alert] = 'Not a valid move, Try again!'
     false
   end
 end
