@@ -1,0 +1,54 @@
+<h1>Chess Game</h1>
+<br>
+<p>X axis origin of your board<%= @board.origin_x %></p>
+<p>y axis origin of your board<%= @board.origin_y %></p>
+<p>y size of your board<%= @board.size %></p>
+<p>current Piece ID: <%= @board.my_piece %></p>
+<p>Total pieces till now: <%= @board.pieces %></p>
+
+
+<h2> Your current piece position</h2>
+<p>X: <%= session['position']? session['position'][0]: 'Not positioned' %></p>
+<p>y: <%= session['position']? session['position'][1]: 'Not positioned' %></p>
+<p>color: <%= session['position']? session['position'][2]: 'Not positioned' %></p>
+<p>face: <%= session['position']? session['position'][3]: 'Not positioned' %></p>
+
+<%= form_with url: "/board/place", method: :post do |form| %>
+  <%= form.label :x, "X coordinate:" %>
+  <%= form.text_field :x %>
+  <%= form.label :x, "y coordinate:" %>
+  <%= form.text_field :y %>
+  <%= form.label :face, "face:" %>
+  <%= form.text_field :face %>
+  <%= form.label :color, "color:" %>
+  <%= form.text_field :color %>
+  <%= form.submit "Place" %>
+<% end %>
+
+<br>
+
+<%= form_with url: "/board/move", method: :patch do |form| %>
+  <%= form.label :units, "units:" %>
+  <%= form.text_field :color %>
+  <%= form.submit "Move" %>
+<% end %>
+
+<br>
+
+<%= form_with url: "/board/change_direction", method: :patch do |form| %>
+  <%= form.hidden_field :direction, value: "LEFT" %>
+  <%= form.submit "LEFT" %>
+<% end %>
+
+<br>
+
+<%= form_with url: "/board/change_direction", method: :patch do |form| %>
+  <%= form.hidden_field :direction, value: "RIGHT" %>
+  <%= form.submit "RIGHT" %>
+<% end %>
+
+<br>
+
+<%= form_with url: "/board/report", method: :get do |form| %>
+  <%= form.submit "REPORT" %>
+<% end %>
