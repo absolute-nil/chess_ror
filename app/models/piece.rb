@@ -67,10 +67,11 @@ class Piece
 
   private
 
-  def set_position(x_cord, y_cord, face)
+  def set_position(x_cord, y_cord, face, first_move = nil)
     self.face = face
     self.x_cord = x_cord
     self.y_cord = y_cord
+    self.first_move = first_move if first_move
     self
   end
 

@@ -10,8 +10,8 @@
 <h2> Your current piece position</h2>
 <p>X: <%= session['position']? session['position'][0]: 'Not positioned' %></p>
 <p>y: <%= session['position']? session['position'][1]: 'Not positioned' %></p>
-<p>color: <%= session['position']? session['position'][2]: 'Not positioned' %></p>
-<p>face: <%= session['position']? session['position'][3]: 'Not positioned' %></p>
+<p>face: <%= session['position']? session['position'][2]: 'Not positioned' %></p>
+<p>color: <%= session['position']? session['position'][3]: 'Not positioned' %></p>
 
 <%= form_with url: "/board/place", method: :post do |form| %>
   <%= form.label :x, "X coordinate:" %>

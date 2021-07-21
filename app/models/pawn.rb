@@ -5,7 +5,7 @@ class Pawn < Piece
 
   def initialize(attributes)
     super
-    @first_move = first_move || true
+    @first_move = first_move.nil? ? true : false
     @board = board.is_a?(Board) ? board : Board.new(board)
   end
 
@@ -15,7 +15,7 @@ class Pawn < Piece
       return false
     end
 
-    if (units > 1 || units < -1) && !@first_move
+    if (units > 1 || units < -1) && !self.first_move
       # raise "You can't move the piece #{@id} by #{units} positions"
       return false
     end
@@ -56,7 +56,7 @@ class Pawn < Piece
   def change_direction(direction)
     if direction != 'LEFT' && direction != 'RIGHT'
       puts 'can only change direction LEFT or RIGHT'
-      return
+      return false
     end
 
     new_face = direction_after_shift(direction)
@@ -71,7 +71,7 @@ class Pawn < Piece
     new_x, new_y = validate(units)
     unless new_x.nil?
       @first_move = false
-      return set_position(new_x, new_y, @face)
+      return set_position(new_x, new_y, @face, false)
     end
     false
   rescue RuntimeError

@@ -4,6 +4,7 @@ class BoardController < ApplicationController
   before_action :init,  only: :index
   before_action :board, except: :index
   def index
+    byebug
     @board
   end
 
@@ -31,11 +32,11 @@ class BoardController < ApplicationController
     end
 
     @piece = Piece.get_instance_by_id(@board.my_piece, session)
-
     success_piece = @piece&.move(params[:units].to_i, 'FORWARD')
     if !success_piece
       flash[:alert] = 'Not a valid move, Try again!'
     else
+      success_piece.first_move = false
       update_piece(success_piece)
       flash[:notice] = 'Your move has been made'
     end
@@ -59,9 +60,9 @@ class BoardController < ApplicationController
     end
 
     @piece = Piece.get_instance_by_id(@board.my_piece, session)
-    @piece.change_direction(params[:direction])
+    updated_piece = @piece.change_direction(params[:direction])
+    update_piece(updated_piece)
     flash[:notice] = 'Direction changed successfully'
-
     redirect_back fallback_location: root_path
 
   end
@@ -100,7 +101,7 @@ class BoardController < ApplicationController
   private
 
   def update_piece(piece)
-    session[:pieces_array].delete_if { |h| h["id"] == 0 }
+    session[:pieces_array].delete_if { |h| h["id"] == piece.id }
     session['pieces_array'] << piece
   end
 
