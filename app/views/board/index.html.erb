@@ -52,3 +52,9 @@
 <%= form_with url: "/board/report", method: :get do |form| %>
   <%= form.submit "REPORT" %>
 <% end %>
+
+<br>
+
+<%= form_with url: "/board", method: :delete do |form| %>
+  <%= form.submit "END" %>
+<% end %>

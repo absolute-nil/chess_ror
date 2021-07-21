@@ -32,7 +32,9 @@ class BoardController < ApplicationController
 
     @piece = Piece.get_instance_by_id(@board.my_piece)[0]
 
-    @piece&.move(params[:units].to_i, 'FORWARD')
+    success = @piece&.move(params[:units].to_i, 'FORWARD')
+    flash[:notice] = 'Your move has been made' if success
+    flash[:alert] = 'Not a valid move, Try again!' unless success
     redirect_back fallback_location: root_path
 
   end
@@ -44,6 +46,8 @@ class BoardController < ApplicationController
       return nil
     end
 
+    direction = params['direction']
+
     if direction != 'LEFT' && direction != 'RIGHT'
       flash[:alert] = 'not a valid input'
       redirect_back fallback_location: root_path
@@ -52,6 +56,8 @@ class BoardController < ApplicationController
 
     @piece = Piece.get_instance_by_id(@board.my_piece)[0]
     @piece.change_direction(params[:direction])
+    flash[:notice] = 'Direction changed successfully'
+
     redirect_back fallback_location: root_path
 
   end
@@ -68,17 +74,30 @@ class BoardController < ApplicationController
       @board.pieces += 1
       piece.id
       session['board'] = @board
+      flash[:notice] = 'Your piece has been placed'
+
     else
       flash[:alert] = 'not a valid input'
     end
     redirect_back fallback_location: root_path
   end
 
+  def end
+    session.delete(:board)
+    session.delete(:position)
+    flash[:notice] = 'Game has been reset'
+    redirect_to root_path
+  end
+
   private
 
   def init
-    @board = Board.new(size: 8)
-    session['board'] = @board
+    if session['board'].nil?
+      @board = Board.new(size: 8)
+      session['board'] = @board
+    else
+      @board = Board.new(session['board'])
+    end
   end
 
   def get_board

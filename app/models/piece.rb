@@ -4,8 +4,18 @@ class Piece
 
   @@instance_collector = []
 
+
+  def initialize(attributes)
+    super
+    @@instance_collector << self
+  end
+
   def self.get_instance_by_id(id)
     @@instance_collector.select { |piece| piece.id == id }
+  end
+
+  def self.clear
+    @@instance_collector = []
   end
 
   # def is_overlapping?(x_cord, y_cord)

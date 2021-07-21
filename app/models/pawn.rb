@@ -72,10 +72,12 @@ class Pawn < Piece
     unless new_x.nil?
       set_position(new_x, new_y, @face)
       @first_move = false
+      flash[:notice] = 'Your move has been made'
+      true
     end
   rescue RuntimeError
     flash[:alert] = 'Not a valid move, Try again!'
-
+    false
   end
 end
 
